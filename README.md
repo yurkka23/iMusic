@@ -1,4 +1,5 @@
 Music
+
 iMusic is a music streaming application inspired by Apple Music. It allows users to browse and stream a vast library of songs from various artists, create playlists, and explore personalized recommendations based on their listening habits.
 
 Features
