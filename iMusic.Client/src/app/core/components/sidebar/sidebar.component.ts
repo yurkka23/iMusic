@@ -12,6 +12,7 @@ import {applicationRoleConstant} from '../../constants';
 import { PlaylistInterface } from '../../interfaces/playlist/playlist.interface';
 import { PlaylistApiService } from '../../services/api/playlist-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AdminApiService } from '../../services/api/admin-api.service';
 
 
 @Component({
@@ -26,20 +27,22 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public currentUser: UserInterface;
   public isOpen: boolean = true;
   public userPlaylists : PlaylistInterface[] = [];
+  public usersRequests: UserInterface[];
+
 
   constructor(private readonly router: Router,
     private readonly sidebarService: SidebarService,
     private readonly authService: AuthService,
     private readonly playlistApiService: PlaylistApiService,
-    private readonly notificationService : NotificationService) {
+    private readonly notificationService : NotificationService,
+    private readonly adminApiService: AdminApiService) {
       
   }
 
   public ngOnInit(): void {
-   // this.handleSidebarState();
     this.getCurrentUser();
     this.checkToUpdate();
-  
+    this.renewRequests();
   }
 
   public ngOnDestroy(): void {
@@ -54,6 +57,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.currentUser = currentUser;
         if(!!currentUser){
           this.getPlaylists();
+          
+          if(currentUser.userRoles.includes(applicationRoleConstant.AdminRole))
+          this.getUserRequests();
         }
       });
   }
@@ -76,6 +82,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
       });
   }
 
+  private renewRequests(): void {
+    this.sidebarService.renewRequests$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((renew): void => {
+        if(renew){
+          this.getUserRequests();
+        }
+      });
+  }
+
   public close(): void {
     this.sidebarService.isSidebarOpened$.next(false);
   }
@@ -93,6 +109,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((playlists): void => {
         this.userPlaylists = playlists;
+      }, (error: HttpErrorResponse): void => {
+        const errorMessage = this.notificationService.getErrorMessage(error);
+        this.notificationService.showNotification(errorMessage, 'snack-bar-error');
+      });
+  }
+
+  public getUserRequests(): void {
+    this.adminApiService.getBecomeusersRequests()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((requests): void => {
+        this.usersRequests = requests;
       }, (error: HttpErrorResponse): void => {
         const errorMessage = this.notificationService.getErrorMessage(error);
         this.notificationService.showNotification(errorMessage, 'snack-bar-error');

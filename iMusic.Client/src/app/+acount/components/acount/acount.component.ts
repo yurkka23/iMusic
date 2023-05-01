@@ -49,6 +49,8 @@ export class AcountComponent implements OnInit , OnDestroy {
   }
 
   public getCurrentUser(): void {
+    this.authService.getCurrentUser();
+
     this.authService.user$
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((currentUser): void => {

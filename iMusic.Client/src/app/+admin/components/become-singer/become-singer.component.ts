@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserInterface } from 'src/app/core/interfaces';
-import { NotificationService } from 'src/app/core/services';
+import { NotificationService, SidebarService } from 'src/app/core/services';
 import { AdminApiService } from 'src/app/core/services/api/admin-api.service';
 
 @Component({
@@ -18,7 +18,9 @@ export class BecomeSingerComponent implements OnInit {
 
   constructor(
     private readonly adminApiService: AdminApiService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly sidebarService : SidebarService
+
   ) { }
 
   ngOnInit(): void {
@@ -46,6 +48,7 @@ export class BecomeSingerComponent implements OnInit {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((): void => {
         this.getUserRequests();
+        this.sidebarService.renewRequests$.next(true);
       }, (error: HttpErrorResponse): void => {
         const errorMessage = this.notificationService.getErrorMessage(error);
         this.notificationService.showNotification(errorMessage, 'snack-bar-error');
@@ -57,6 +60,8 @@ export class BecomeSingerComponent implements OnInit {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((): void => {
         this.getUserRequests();
+        this.sidebarService.renewRequests$.next(true);
+
       }, (error: HttpErrorResponse): void => {
         const errorMessage = this.notificationService.getErrorMessage(error);
         this.notificationService.showNotification(errorMessage, 'snack-bar-error');

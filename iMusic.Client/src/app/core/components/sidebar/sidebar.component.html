@@ -54,7 +54,10 @@
       <a *ngIf="currentUser?.userRoles | checkRole: [applicationRole.AdminRole]"
          [routerLink]="['admin/become-singer']"
          routerLinkActive="active">
-         <mat-icon>person_add_alt_1</mat-icon>
+         <mat-icon>
+            person_add_alt_1
+            <div [ngClass]="{'is-user-requests': usersRequests?.length > 0} "></div>
+         </mat-icon>
          Become singer
       </a> 
 

@@ -11,4 +11,6 @@ export class SidebarService {
 
   public readonly isSidebarBufferOpened$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  public readonly renewRequests$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
 }
