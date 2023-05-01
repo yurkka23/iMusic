@@ -31,14 +31,14 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.FindByEmailAsync(userModel.Email);
 
-        if (user.IsBanned)
-        {
-            throw new BadRequestException("You are banned");
-        }
-
         if (user is null)
         {
             throw new BadRequestException("Incorrect login");
+        }
+
+        if (user.IsBanned)
+        {
+            throw new BadRequestException("You are banned");
         }
 
         var result = await _signInManager.PasswordSignInAsync(user, userModel.Password, false, false);
